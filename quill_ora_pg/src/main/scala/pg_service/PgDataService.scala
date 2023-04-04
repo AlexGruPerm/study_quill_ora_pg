@@ -24,5 +24,4 @@ object PgDataService {
     ZIO.serviceWithZIO[PgDataService](_.getPeopleAgeGt(ageGt))
 
   val live: ZLayer[Quill.Postgres[SnakeCase],Nothing,PgDataService] = ZLayer.fromFunction(new PgDataService(_))
-    //todo: ??? ZLayer.fromFunction(q: Quill.Postgres[SnakeCase] => new DataService(q))
 }

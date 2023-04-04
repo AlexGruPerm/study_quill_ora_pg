@@ -7,7 +7,7 @@ import zio.{ZIO, ZLayer}
 
 import java.sql.SQLException
 
-class  OraDataService(quill: Quill.Postgres[SnakeCase]) {
+class  OraDataService(quill: Quill.Oracle[SnakeCase]) {
   import quill._
   def getPeopleAll: ZIO[Any, SQLException, List[Person]] = run(query[Person])
   def getPeopleAgeGt(ageGt: Int): ZIO[Any, SQLException, List[Person]] = run(query[Person].filter(_.age >= lift(ageGt)))
@@ -23,6 +23,5 @@ object  OraDataService {
   def getPeopleAgeGt(ageGt: Int): ZIO[ OraDataService, SQLException, List[Person]] =
     ZIO.serviceWithZIO[ OraDataService](_.getPeopleAgeGt(ageGt))
 
-  val live: ZLayer[Quill.Postgres[SnakeCase],Nothing, OraDataService] = ZLayer.fromFunction(new  OraDataService(_))
-  //todo: ??? ZLayer.fromFunction(q: Quill.Postgres[SnakeCase] => new DataService(q))
+  val live: ZLayer[Quill.Oracle[SnakeCase],Nothing, OraDataService] = ZLayer.fromFunction(new  OraDataService(_))
 }
