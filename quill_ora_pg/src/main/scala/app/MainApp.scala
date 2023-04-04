@@ -41,14 +41,22 @@ object MainApp extends ZIOAppDefault {
     personsOraAll <- oraService.getPeopleAll
     forInsert = personsPgAll diff personsOraAll
 
-/*    _ <- ZIO.foreachDiscard(forInsert){p => ZIO.logInfo(s"For insert to ORACLE: ${p}") *>
-      oraService.insertRowWithoutGen(p)//.insertRow(p)
-    }*/
+    /*
+    //ok.1
+    _ <- ZIO.foreachDiscard(forInsert)(p => ZIO.logInfo(s"For insert to ORACLE: ${p}"))
+    insertedIds <- ZIO.foreach(forInsert)(p => oraService.insertRowWithoutGen(p))
+    _ <- ZIO.logInfo(s"Inserted ${insertedIds.size} elements id = [${insertedIds}]")
+    */
 
+    _ <- ZIO.foreachDiscard(forInsert)(p => ZIO.logInfo(s"For insert to ORACLE: ${p}"))
+    insertedIds <- ZIO.foreach(forInsert)(p => oraService.insertRow(p))
+    _ <- ZIO.logInfo(s"Inserted ${insertedIds.size} elements id = [${insertedIds}]")
+    /*
     _ <- oraService.insertRows(forInsert).catchAll{
       case ex: SQLException =>
         ZIO.logError(s"Error: ${ex.getMessage} - ${ex.getSQLState} - ${ex.getErrorCode} - ${ex.getCause}")
     }
+    */
   } yield ()
 
   val fromOraToPgByAllCols: ZIO[PgDataService with OraDataService,SQLException,Unit] = for {
