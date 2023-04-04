@@ -7,22 +7,22 @@ import zio.{ZIO, ZLayer}
 
 import java.sql.SQLException
 
-class DataService(quill: Quill.Postgres[SnakeCase]) {
+class PgDataService(quill: Quill.Postgres[SnakeCase]) {
   import quill._
   def getPeopleAll: ZIO[Any, SQLException, List[Person]] = run(query[Person])
   def getPeopleAgeGt(ageGt: Int): ZIO[Any, SQLException, List[Person]] = run(query[Person].filter(_.age >= lift(ageGt)))
 }
 
-object DataService {
+object PgDataService {
   /**
    * For each function in DataService class we have the cover here in compaion object.
   */
-  def getPeopleAll: ZIO[DataService, SQLException, List[Person]] =
-    ZIO.serviceWithZIO[DataService](_.getPeopleAll)
+  def getPeopleAll: ZIO[PgDataService, SQLException, List[Person]] =
+    ZIO.serviceWithZIO[PgDataService](_.getPeopleAll)
 
-  def getPeopleAgeGt(ageGt: Int): ZIO[DataService, SQLException, List[Person]] =
-    ZIO.serviceWithZIO[DataService](_.getPeopleAgeGt(ageGt))
+  def getPeopleAgeGt(ageGt: Int): ZIO[PgDataService, SQLException, List[Person]] =
+    ZIO.serviceWithZIO[PgDataService](_.getPeopleAgeGt(ageGt))
 
-  val live: ZLayer[Quill.Postgres[SnakeCase],Nothing,DataService] = ZLayer.fromFunction(new DataService(_))
+  val live: ZLayer[Quill.Postgres[SnakeCase],Nothing,PgDataService] = ZLayer.fromFunction(new PgDataService(_))
     //todo: ??? ZLayer.fromFunction(q: Quill.Postgres[SnakeCase] => new DataService(q))
 }
