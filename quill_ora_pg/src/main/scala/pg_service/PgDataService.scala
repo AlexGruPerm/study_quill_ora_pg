@@ -1,6 +1,7 @@
 package pg_service
 
 import common.Person
+import io.getquill.FutureTests.ctx
 import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill
 import zio.{ZIO, ZLayer}
@@ -11,6 +12,11 @@ class PgDataService(quill: Quill.Postgres[SnakeCase]) {
   import quill._
   def getPeopleAll: ZIO[Any, SQLException, List[Person]] = run(query[Person])
   def getPeopleAgeGt(ageGt: Int): ZIO[Any, SQLException, List[Person]] = run(query[Person].filter(_.age >= lift(ageGt)))
+  private def insertValues(persons: List[Person]) = quote {
+    liftQuery(persons).foreach(c => query[Person].insertValue(c).returning(p => p.id))
+  }
+  def insertRows(persons: List[Person])=
+    run(insertValues(persons))
 }
 
 object PgDataService {
