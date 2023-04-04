@@ -40,12 +40,15 @@ object MainApp extends ZIOAppDefault {
     personsPgAll <- pgService.getPeopleAll
     personsOraAll <- oraService.getPeopleAll
     forInsert = personsPgAll diff personsOraAll
-    _ <- ZIO.foreachDiscard(forInsert){p => ZIO.logInfo(s"For insert to ORACLE: ${p}")}
-    _ <- oraService.insertRows(forInsert)
-     /*
-    _ <- ZIO.foreachDiscard(personsPgAll){p => ZIO.logInfo(s"Person [PG][${p.id}]: ${p.name} with ${p.age}")}
-    _ <- ZIO.foreachDiscard(personsOraAll){p => ZIO.logInfo(s"Person [ORA][${p.id}]: ${p.name} with ${p.age}")}
-    */
+
+/*    _ <- ZIO.foreachDiscard(forInsert){p => ZIO.logInfo(s"For insert to ORACLE: ${p}") *>
+      oraService.insertRowWithoutGen(p)//.insertRow(p)
+    }*/
+
+    _ <- oraService.insertRows(forInsert).catchAll{
+      case ex: SQLException =>
+        ZIO.logError(s"Error: ${ex.getMessage} - ${ex.getSQLState} - ${ex.getErrorCode} - ${ex.getCause}")
+    }
   } yield ()
 
   val fromOraToPgByAllCols: ZIO[PgDataService with OraDataService,SQLException,Unit] = for {

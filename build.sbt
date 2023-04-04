@@ -7,7 +7,7 @@ ThisBuild / scalaVersion := "2.13.10"
   val Versions = new {
     val zio         = "2.0.10"
     val pgVers      = "42.6.0"
-    val oraVers     = "12.2.0.1"
+    val oraVers     = "11.2.0.4"
     val quillZio    = "4.6.0"
   }
 
@@ -33,7 +33,7 @@ ThisBuild / scalaVersion := "2.13.10"
     new {
       val zio = "dev.zio" %% "zio" % Versions.zio
       val pg = "org.postgresql" % "postgresql" % Versions.pgVers
-      val ora = "com.oracle.jdbc" % "ojdbc8" % Versions.oraVers
+      val ora =  "com.oracle.database.jdbc" % "ojdbc6" % Versions.oraVers
       val quill_zio = "io.getquill" %% "quill-jdbc-zio" % Versions.quillZio
 
 
@@ -63,7 +63,8 @@ ThisBuild / scalaVersion := "2.13.10"
     scalacOptions ++= compilerOptions,
     resolvers ++= Seq(
       "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-      "Ora driver" at "https://broadinstitute.jfrog.io/artifactory/libs-release-local/",
+      "Ora8 driver" at "https://broadinstitute.jfrog.io/artifactory/libs-release-local/",
+      "Ora7 driver" at "https://maven.icm.edu.pl/artifactory/repo",
       Resolver.DefaultMavenRepository,
       Resolver.mavenLocal,
       Resolver.bintrayRepo("websudos", "oss-releases")
